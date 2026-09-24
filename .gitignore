@@ -1,0 +1,10 @@
+node_modules/
+dist/
+dist-electron/
+_tmp/
+*.log
+.DS_Store
+audio_backend_env/
+python/__pycache__/
+python/*.pyc
+release/

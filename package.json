@@ -1,0 +1,34 @@
+{
+  "name": "live-vj-studio",
+  "version": "0.1.0",
+  "description": "Real-time live projection VJ system with 3D lyrics, audio-reactive visuals, and DJ mixer panel",
+  "main": "dist-electron/main.js",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build"
+  },
+  "keywords": ["vj", "live", "electron", "three.js", "whisper", "webgl", "karaoke"],
+  "author": "fuuchanpapa",
+  "license": "MIT",
+  "dependencies": {
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "@react-three/fiber": "^9.8.0",
+    "@react-three/drei": "^10.0.0",
+    "three": "^0.170.0",
+    "troika-three-text": "^0.49.1",
+    "wavesurfer.js": "^7.12.12",
+    "zustand": "^5.0.15"
+  },
+  "devDependencies": {
+    "@types/react": "^19.1.0",
+    "@types/react-dom": "^19.1.0",
+    "@types/three": "^0.169.0",
+    "@vitejs/plugin-react": "^6.1.0",
+    "electron": "^44.4.0",
+    "typescript": "^5.8.0",
+    "vite": "^8.3.0",
+    "vite-plugin-electron": "^1.1.0",
+    "vite-plugin-electron-renderer": "^1.0.0"
+  }
+}
