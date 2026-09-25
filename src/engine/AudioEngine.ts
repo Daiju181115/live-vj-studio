@@ -67,6 +67,7 @@ export class AudioEngine {
 
   // 再生制御
   private _startTime = 0;  // audioContext.currentTime at playback start
+  private masterSource?: AudioBufferSourceNode;
   private _pauseOffset = 0;
   private _isPlaying = false;
 
@@ -189,10 +190,16 @@ export class AudioEngine {
   /** マスター音源のみを再生（ステム未分離の場合） */
   playMaster(buffer: AudioBuffer, offset = 0) {
     this._stopAllSources();
+    // Stop any existing master source
+    if (this.masterSource) {
+      try { this.masterSource.stop(); } catch {}
+      this.masterSource.disconnect();
+    }
     const source = this.ctx.createBufferSource();
     source.buffer = buffer;
     source.connect(this.masterGain);
     source.start(0, offset);
+    this.masterSource = source;
     this._startTime = this.ctx.currentTime - offset;
     this._isPlaying = true;
   }
@@ -209,6 +216,12 @@ export class AudioEngine {
       source.start(startAt, offset);
       stem.source = source;
     });
+    // Ensure master source is cleared when playing stems
+    if (this.masterSource) {
+      try { this.masterSource.stop(); } catch {}
+      this.masterSource.disconnect();
+      this.masterSource = undefined;
+    }
     this._startTime = startAt - offset;
     this._isPlaying = true;
   }
@@ -216,12 +229,24 @@ export class AudioEngine {
   pause() {
     this._pauseOffset = this.getCurrentTime();
     this._stopAllSources();
+    // Also stop master source if active
+    if (this.masterSource) {
+      try { this.masterSource.stop(); } catch {}
+      this.masterSource.disconnect();
+      this.masterSource = undefined;
+    }
     this._isPlaying = false;
   }
 
   stop() {
     this._pauseOffset = 0;
     this._stopAllSources();
+    // Ensure master source is stopped
+    if (this.masterSource) {
+      try { this.masterSource.stop(); } catch {}
+      this.masterSource.disconnect();
+      this.masterSource = undefined;
+    }
     this._isPlaying = false;
   }
 
@@ -231,9 +256,16 @@ export class AudioEngine {
   }
 
   private _stopAllSources() {
+    // Stop all stem sources
     this.stems.forEach(stem => {
       try { stem.source?.stop(); } catch {}
     });
+    // Stop master source if it exists
+    if (this.masterSource) {
+      try { this.masterSource.stop(); } catch {}
+      this.masterSource.disconnect();
+      this.masterSource = undefined;
+    }
   }
 
   // ── リアルタイム解析ループ ─────────────────────────────────
