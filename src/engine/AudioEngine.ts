@@ -74,6 +74,7 @@ export class AudioEngine {
   // コールバック
   onBeat: ((bpm: number, time: number) => void) | null = null;
   onTimeUpdate: ((time: number) => void) | null = null;
+  onEnded: (() => void) | null = null;
 
   constructor() {
     this.ctx = new AudioContext({ latencyHint: 'interactive', sampleRate: 44100 });
@@ -198,6 +199,13 @@ export class AudioEngine {
     const source = this.ctx.createBufferSource();
     source.buffer = buffer;
     source.connect(this.masterGain);
+    source.onended = () => {
+      if (this.masterSource === source) {
+        this._isPlaying = false;
+        this.masterSource = undefined;
+        this.onEnded?.();
+      }
+    };
     source.start(0, offset);
     this.masterSource = source;
     this._startTime = this.ctx.currentTime - offset;
@@ -213,6 +221,16 @@ export class AudioEngine {
       const source = this.ctx.createBufferSource();
       source.buffer = stem.buffer;
       source.connect(stem.gainNode);
+      source.onended = () => {
+        if (stem.source === source) {
+          stem.source = undefined;
+          // Trigger onEnded if all stems finished (or just relying on one like vocal, but for simplicity, we check if playing)
+          if (this._isPlaying) {
+             this._isPlaying = false;
+             this.onEnded?.();
+          }
+        }
+      };
       source.start(startAt, offset);
       stem.source = source;
     });

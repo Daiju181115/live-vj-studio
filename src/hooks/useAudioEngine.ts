@@ -62,12 +62,17 @@ export function useAudioEngine() {
       setCurrentTime(time);
       lyricEngineRef.current.tick(time);
     };
+    engine.onEnded = () => {
+      setIsPlaying(false);
+      setCurrentTime(audioBufferRef.current?.duration || 0);
+    };
 
     return () => {
       engine.onBeat = null;
       engine.onTimeUpdate = null;
+      engine.onEnded = null;
     };
-  }, [setCurrentTime]);
+  }, [setCurrentTime, setIsPlaying]);
 
   // 解析ループ開始（マウント時）
   useEffect(() => {

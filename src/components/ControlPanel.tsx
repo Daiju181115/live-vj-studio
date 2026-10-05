@@ -159,7 +159,11 @@ export function ControlPanel() {
                 <button
                   className="btn-neon"
                   onClick={handlePlayPause}
-                  style={{ fontSize: '18px', padding: '8px 20px', borderColor: isPlaying ? 'var(--accent-hot)' : 'var(--accent-cyber)' }}
+                  style={{ 
+                    fontSize: '18px', padding: '8px', 
+                    width: '64px', display: 'flex', justifyContent: 'center',
+                    borderColor: isPlaying ? 'var(--accent-hot)' : 'var(--accent-cyber)' 
+                  }}
                 >
                   {isPlaying ? '⏸' : '▶'}
                 </button>
